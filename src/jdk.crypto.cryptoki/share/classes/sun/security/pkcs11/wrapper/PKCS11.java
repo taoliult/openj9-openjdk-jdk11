@@ -45,16 +45,25 @@
  *  POSSIBILITY  OF SUCH DAMAGE.
  */
 
+/*
+ * ===========================================================================
+ * (c) Copyright IBM Corp. 2022, 2022 All Rights Reserved
+ * ===========================================================================
+ */
+
 package sun.security.pkcs11.wrapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import sun.security.util.Debug;
+import sun.security.pkcs11.SunPKCS11;
 
 import static sun.security.pkcs11.wrapper.PKCS11Constants.*;
 
@@ -134,6 +143,48 @@ public class PKCS11 {
     private static final Map<String,PKCS11> moduleMap =
         new HashMap<String,PKCS11>();
 
+
+    static boolean isKey(CK_ATTRIBUTE[] attrs) {
+        for(int i = 0; i < attrs.length; i++) {
+            if (attrs[i].type == CKA_CLASS && (attrs[i].getLong() == CKO_PRIVATE_KEY || attrs[i].getLong() == CKO_SECRET_KEY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // this is the SunPKCS11 provider instance
+    // there can only be a single PKCS11 provider in
+    // FIPS mode.
+    private static SunPKCS11 mysunpkcs11 = null;
+    static class innerPKCS11 extends PKCS11 {
+        innerPKCS11(String pkcs11ModulePath, String functionListName) throws IOException {
+            super(pkcs11ModulePath, functionListName);
+        }
+
+        // set PKCS11 instance to FIPS mode
+        static void setFIPS(SunPKCS11 sunpkcs11) {
+            System.out.println("PKCS11 object set to FIPS mode - provider object" + sunpkcs11);
+            mysunpkcs11 = sunpkcs11;
+        }
+
+        public synchronized long C_CreateObject(long hSession, CK_ATTRIBUTE[] pTemplate) throws PKCS11Exception {
+            if (mysunpkcs11 != null && isKey(pTemplate)) {
+		try {
+                    System.out.println("Invoke SunPKCS11 to import key");
+                    Method method = mysunpkcs11.getClass().getDeclaredMethod("importKey", long.class, CK_ATTRIBUTE[].class);
+                    method.setAccessible(true);
+                    return (Long)method.invoke(mysunpkcs11, hSession, pTemplate);
+		} catch(InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    System.out.println("Error Invoke SunPKCS11 to import key");
+		    throw new PKCS11Exception(CKR_GENERAL_ERROR);
+                }
+            }
+            return super.C_CreateObject(hSession, pTemplate);
+        }
+    }
+
+
     /**
      * Connects to the PKCS#11 driver given. The filename must contain the
      * path, if the driver is not in the system's search path.
@@ -157,7 +208,7 @@ public class PKCS11 {
         if (pkcs11 == null) {
             if ((pInitArgs != null)
                     && ((pInitArgs.flags & CKF_OS_LOCKING_OK) != 0)) {
-                pkcs11 = new PKCS11(pkcs11ModulePath, functionList);
+                pkcs11 = new innerPKCS11(pkcs11ModulePath, functionList);
             } else {
                 pkcs11 = new SynchronizedPKCS11(pkcs11ModulePath, functionList);
             }
@@ -1691,6 +1742,17 @@ static class SynchronizedPKCS11 extends PKCS11 {
 
     public synchronized long C_CreateObject(long hSession,
             CK_ATTRIBUTE[] pTemplate) throws PKCS11Exception {
+        if (mysunpkcs11 != null && isKey(pTemplate)) {
+	    try {
+                System.out.println("Invoke SunPKCS11 to import key");
+                Method method = mysunpkcs11.getClass().getMethod("importKey", long.class, CK_ATTRIBUTE[].class);
+                method.setAccessible(true);
+                return (Long)method.invoke(mysunpkcs11, hSession, pTemplate);
+	    } catch(InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                System.out.println("Error Invoke SunPKCS11 to import key");
+	        throw new PKCS11Exception(CKR_GENERAL_ERROR);
+            }
+        }
         return super.C_CreateObject(hSession, pTemplate);
     }
 
