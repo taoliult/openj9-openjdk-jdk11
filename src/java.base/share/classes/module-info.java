@@ -342,7 +342,8 @@ module java.base {
     exports sun.util.resources to
         jdk.localedata;
     exports openj9.internal.security to
-        jdk.crypto.ec;
+        jdk.crypto.ec,
+        jdk.crypto.cryptoki;
 
 
     // the service types defined by the APIs in this module
