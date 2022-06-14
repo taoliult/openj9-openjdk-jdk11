@@ -379,6 +379,22 @@ abstract class P11Key implements Key, Length {
             new CK_ATTRIBUTE(CKA_EXTRACTABLE),
         });
         if (attributes[1].getBoolean() || (attributes[2].getBoolean() == false)) {
+            if (SunPKCS11.mysunpkcs11 != null && "RSA".equals(algorithm)) {
+                try {
+                    byte[] key = SunPKCS11.mysunpkcs11.exportKey(session.id(), attributes, keyID);
+                    RSAPrivateKey rsaPrivKey = RSAPrivateCrtKeyImpl.newKey(key);
+                    if (rsaPrivKey instanceof RSAPrivateCrtKeyImpl) {
+                        // CRT key
+                        return new P11RSAPrivateKeyFIPS(session, keyID, algorithm, keyLength, attributes, (RSAPrivateCrtKeyImpl)rsaPrivKey);
+                    } else {
+                        return new P11RSAPrivateNonCRTKeyFIPS(session, keyID, algorithm, keyLength, attributes, rsaPrivKey);
+                    }
+
+                } catch(PKCS11Exception | InvalidKeyException e) {
+                    // attempt failed, create a P11PrivateKey object
+                    System.out.println("Error importing key: " + e);
+                }
+            }
             return new P11PrivateKey
                 (session, keyID, algorithm, keyLength, attributes);
         } else {
@@ -522,6 +538,50 @@ abstract class P11Key implements Key, Length {
     }
 
     // RSA CRT private key
+    private static final class P11RSAPrivateKeyFIPS extends P11Key
+                implements RSAPrivateCrtKey {
+        private static final long serialVersionUID = 9215872438913515220L;
+
+        private RSAPrivateCrtKeyImpl key;
+
+        P11RSAPrivateKeyFIPS(Session session, long keyID, String algorithm,
+                int keyLength, CK_ATTRIBUTE[] attrs, RSAPrivateCrtKeyImpl key) {
+            super(PRIVATE, session, keyID, algorithm, keyLength, attrs);
+            this.key = key;
+        }
+
+        public String getFormat() {
+            return "PKCS#8";
+        }
+        synchronized byte[] getEncodedInternal() {
+            return key.getEncoded();
+        }
+        public BigInteger getModulus() {
+            return key.getModulus();
+        }
+        public BigInteger getPublicExponent() {
+            return key.getPublicExponent();
+        }
+        public BigInteger getPrivateExponent() {
+            return key.getPrivateExponent();
+        }
+        public BigInteger getPrimeP() {
+            return key.getPrimeP();
+        }
+        public BigInteger getPrimeQ() {
+            return key.getPrimeQ();
+        }
+        public BigInteger getPrimeExponentP() {
+            return key.getPrimeExponentP();
+        }
+        public BigInteger getPrimeExponentQ() {
+            return key.getPrimeExponentQ();
+        }
+        public BigInteger getCrtCoefficient() {
+            return key.getCrtCoefficient();
+        }
+    }
+    // RSA CRT private key
     private static final class P11RSAPrivateKey extends P11Key
                 implements RSAPrivateCrtKey {
         private static final long serialVersionUID = 9215872438913515220L;
@@ -605,6 +665,32 @@ abstract class P11Key implements Key, Length {
         }
         public BigInteger getCrtCoefficient() {
             return coeff;
+        }
+    }
+
+    // RSA non-CRT private key
+    private static final class P11RSAPrivateNonCRTKeyFIPS extends P11Key
+                implements RSAPrivateKey {
+        private static final long serialVersionUID = 1137764983777411481L;
+
+        RSAPrivateKey key;
+
+        P11RSAPrivateNonCRTKeyFIPS(Session session, long keyID, String algorithm,
+                int keyLength, CK_ATTRIBUTE[] attributes, RSAPrivateKey key) {
+            super(PRIVATE, session, keyID, algorithm, keyLength, attributes);
+            this.key = key;
+        }
+        public String getFormat() {
+            return "PKCS#8";
+        }
+        synchronized byte[] getEncodedInternal() {
+            return key.getEncoded();
+        }
+        public BigInteger getModulus() {
+            return key.getModulus();
+        }
+        public BigInteger getPrivateExponent() {
+            return key.getPrivateExponent();
         }
     }
 

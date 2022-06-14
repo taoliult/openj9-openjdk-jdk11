@@ -102,6 +102,11 @@ public final class SunPKCS11 extends AuthProvider {
 
     static NativeResourceCleaner cleaner;
 
+    // this is the SunPKCS11 provider instance
+    // there can only be a single PKCS11 provider in
+    // FIPS mode.
+    static SunPKCS11 mysunpkcs11 = null;
+
     Token getToken() {
         return token;
     }
@@ -400,6 +405,7 @@ public final class SunPKCS11 extends AuthProvider {
                 Method method = p11.getClass().getDeclaredMethod("setFIPS", this.getClass());
                 method.setAccessible(true);
                 method.invoke(p11, this);
+                mysunpkcs11 = this;
 
                 Session session = null;
                 try {
@@ -449,6 +455,38 @@ public final class SunPKCS11 extends AuthProvider {
         return aliases;
     }
 
+    byte[] exportKey(long hSession, CK_ATTRIBUTE[] attributes, long keyId) throws PKCS11Exception {
+
+     // Generating the secret key that will be used for wrapping and unwrapping
+     CK_ATTRIBUTE[] wrapKeyAttributes = token.getAttributes(TemplateManager.O_GENERATE,
+                     CKO_SECRET_KEY, CKK_AES, new CK_ATTRIBUTE[] {
+                             new CK_ATTRIBUTE(CKA_CLASS, CKO_SECRET_KEY),
+                             new CK_ATTRIBUTE(CKA_VALUE_LEN, 256 >> 3)});
+     Session wrapKeyGenSession = token.getObjSession();
+     long wrapKeyId = token.p11.C_GenerateKey(wrapKeyGenSession.id(), new CK_MECHANISM(CKM_AES_KEY_GEN), wrapKeyAttributes);
+     P11Key wrapKey = (P11Key)P11Key.secretKey(wrapKeyGenSession, wrapKeyId, "AES", 256 >> 3, null);
+     token.releaseSession(wrapKeyGenSession);
+
+     // Wrapping the private key inside the HSM using the generated secret key
+     CK_MECHANISM wrapMechanism = new CK_MECHANISM(CKM_AES_CBC_PAD, new byte[16]);
+     wrapKeyId = wrapKey.getKeyID();
+     byte[] wrappedKeyBytes = token.p11.C_WrapKey(hSession, wrapMechanism, wrapKeyId, keyId);
+
+     // Unwrapping the private key to obtain the private key
+     byte[] unwrappedKeyBytes;
+     try {
+         Cipher unwrapCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+         unwrapCipher.init(Cipher.DECRYPT_MODE, wrapKey, new IvParameterSpec((byte[])wrapMechanism.pParameter), null);
+         unwrappedKeyBytes = unwrapCipher.doFinal(wrappedKeyBytes);
+     } catch(NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | InvalidAlgorithmParameterException | InvalidKeyException | IllegalBlockSizeException e) {
+         throw new PKCS11Exception(CKR_GENERAL_ERROR);
+     }
+
+     wrapKey.releaseKeyID();
+     return unwrappedKeyBytes;
+    }
+
+
     long importKey(long hSession, CK_ATTRIBUTE[] attributes) throws PKCS11Exception {
         long unwrappedKeyId, keyClass = 0, keyType = 0;
         byte[] keyBytes = null;
@@ -466,20 +504,18 @@ public final class SunPKCS11 extends AuthProvider {
         }
 
         if (keyClass == CKO_SECRET_KEY && keyBytes != null && keyBytes.length > 0) {
-            CK_MECHANISM wrapMechanism = new CK_MECHANISM(CKM_AES_CBC_PAD, new byte[16]);
-            CK_ATTRIBUTE[] wrapAttributes = token.getAttributes(TemplateManager.O_GENERATE,
+            CK_ATTRIBUTE[] wrapKeyAttributes = token.getAttributes(TemplateManager.O_GENERATE,
                             CKO_SECRET_KEY, CKK_AES, new CK_ATTRIBUTE[] {
                                     new CK_ATTRIBUTE(CKA_CLASS, CKO_SECRET_KEY),
                                     new CK_ATTRIBUTE(CKA_VALUE_LEN, 256 >> 3)});
-
-            Session wrapSession = token.getObjSession();
-            long keyId = token.p11.C_GenerateKey(wrapSession.id(), new CK_MECHANISM(CKM_AES_KEY_GEN), wrapAttributes);
-            P11Key wrapKey = (P11Key)P11Key.secretKey(wrapSession, keyId, "AES", 256 >> 3, null);
-            token.releaseSession(wrapSession);
+            Session wrapKeyGenSession = token.getObjSession();
+            long keyId = token.p11.C_GenerateKey(wrapKeyGenSession.id(), new CK_MECHANISM(CKM_AES_KEY_GEN), wrapKeyAttributes);
+            P11Key wrapKey = (P11Key)P11Key.secretKey(wrapKeyGenSession, keyId, "AES", 256 >> 3, null);
+            token.releaseSession(wrapKeyGenSession);
 
             long wrapKeyId = wrapKey.getKeyID();
             try {
-		// need PKCS5Padding as some key sizes may not be multiple of 16Bits
+                CK_MECHANISM wrapMechanism = new CK_MECHANISM(CKM_AES_CBC_PAD, new byte[16]);
                 Cipher wrapCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                 wrapCipher.init(Cipher.ENCRYPT_MODE, wrapKey, new IvParameterSpec((byte[])wrapMechanism.pParameter), null);
                 byte[] wrappedBytes = wrapCipher.doFinal(keyBytes);

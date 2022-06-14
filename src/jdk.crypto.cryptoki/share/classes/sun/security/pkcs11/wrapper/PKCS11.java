@@ -157,6 +157,7 @@ public class PKCS11 {
     // there can only be a single PKCS11 provider in
     // FIPS mode.
     private static SunPKCS11 mysunpkcs11 = null;
+
     static class innerPKCS11 extends PKCS11 {
         innerPKCS11(String pkcs11ModulePath, String functionListName) throws IOException {
             super(pkcs11ModulePath, functionListName);
