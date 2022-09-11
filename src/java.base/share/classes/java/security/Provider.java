@@ -23,6 +23,12 @@
  * questions.
  */
 
+/*
+ * ===========================================================================
+ * (c) Copyright IBM Corp. 2022, 2022 All Rights Reserved
+ * ===========================================================================
+ */
+
 package java.security;
 
 import java.io.*;
@@ -34,6 +40,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.concurrent.ConcurrentHashMap;
+
+import openj9.internal.security.SecurityRestrictConfigurator;
+import openj9.internal.security.SecurityRestrictProperties;
 
 /**
  * This class represents a "provider" for the
@@ -1374,6 +1383,12 @@ public abstract class Provider extends Properties {
         }
         String type = s.getType();
         String algorithm = s.getAlgorithm();
+        if (SecurityRestrictConfigurator.enableSecurityRestrict()) {
+            // If security restrict is not allow, then return without register
+            if (!SecurityRestrictProperties.getInstance().isConstraintsAllow(s)) {
+                return;
+            }
+        }
         ServiceKey key = new ServiceKey(type, algorithm, true);
         implRemoveService(serviceMap.get(key));
         serviceMap.put(key, s);

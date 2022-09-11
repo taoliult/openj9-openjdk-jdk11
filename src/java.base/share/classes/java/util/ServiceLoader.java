@@ -57,6 +57,9 @@ import jdk.internal.module.ServicesCatalog.ServiceProvider;
 import jdk.internal.reflect.CallerSensitive;
 import jdk.internal.reflect.Reflection;
 
+import openj9.internal.security.SecurityRestrictConfigurator;
+import openj9.internal.security.SecurityRestrictProperties;
+
 /**
  * A facility to load implementations of a service.
  *
@@ -777,7 +780,18 @@ public final class ServiceLoader<S>
             Throwable exc = null;
             if (acc == null) {
                 try {
-                    p = ctor.newInstance();
+                    // If the specified class extends Provider && security restrict mode enable.
+                    if (java.security.Provider.class.isAssignableFrom(ctor.getDeclaringClass())
+                            && SecurityRestrictConfigurator.enableSecurityRestrict()) {
+                        // Load the provider if it is allowed in security restrict mode.
+                        // Do nothing(return p = null) if it is not allowed.
+                        if (SecurityRestrictProperties.getInstance()
+                                .isProviderAllow(ctor.getDeclaringClass().getName())) {
+                            p = ctor.newInstance();   
+                        }
+                    } else {
+                        p = ctor.newInstance();
+                    }
                 } catch (Throwable x) {
                     exc = x;
                 }
