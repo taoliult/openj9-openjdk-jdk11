@@ -780,6 +780,8 @@ public final class ServiceLoader<S>
             Throwable exc = null;
             if (acc == null) {
                 try {
+                    System.out.println("TAO DEBUG ctor.getDeclaringClass(): " + ctor.getDeclaringClass());
+                    System.out.println("TAO DEBUG ctor.getDeclaringClass().getName(): " + ctor.getDeclaringClass().getName());
                     // If the specified class extends Provider && security restrict mode enable.
                     if (java.security.Provider.class.isAssignableFrom(ctor.getDeclaringClass())
                             && SecurityRestrictConfigurator.enableSecurityRestrict()) {

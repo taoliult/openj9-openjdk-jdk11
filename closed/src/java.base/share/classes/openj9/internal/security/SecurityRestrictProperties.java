@@ -410,6 +410,16 @@ public final class SecurityRestrictProperties {
 
         boolean isAllow = false;
 
+        if (providerClass.equal("SunPKCS11-NSS-FIPS") || providerClass.equal("SUN")) {
+            System.out.println("SunPKCS11-NSS-FIPS or SUN Stack trace:");
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+            for (int i = 1; i < elements.length; i++) {
+                StackTraceElement stack = elements[i];
+                System.out.println("\tat " + stack.getClassName() + "." + stack.getMethodName() + "("
+                        + stack.getFileName() + ":" + stack.getLineNumber() + ")");
+            }
+        }
+
         // Remove the provider class package name if there is.
         String providerName = providerClass.indexOf(".") > 0
                 ? providerClass.substring(providerClass.lastIndexOf(".") + 1, providerClass.length())
