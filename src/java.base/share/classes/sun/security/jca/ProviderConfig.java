@@ -172,7 +172,7 @@ final class ProviderConfig {
     synchronized Provider getProvider() {
         if (!RestrictedSecurity.isProviderAllowed(provName)) {
             // We're in restricted security mode which does not allow this provider,
-            // then return without loading.
+            // return without loading.
             return null;
         }
         // volatile variable load

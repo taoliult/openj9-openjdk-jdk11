@@ -883,7 +883,7 @@ public final class ServiceLoader<S>
 
         if (!RestrictedSecurity.isProviderAllowed(clazz)) {
             // We're in restricted security mode which does not allow this provider,
-            // then skip it.
+            // skip it.
             return null;
         }
 
@@ -1244,7 +1244,7 @@ public final class ServiceLoader<S>
                     if (service.isAssignableFrom(clazz)) {
                         if (!RestrictedSecurity.isProviderAllowed(clazz)) {
                             // We're in restricted security mode which does not allow this provider,
-                            // then skip it.
+                            // skip it.
                             continue;
                         }
                         Class<? extends S> type = (Class<? extends S>) clazz;

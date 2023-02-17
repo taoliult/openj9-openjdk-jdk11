@@ -1382,7 +1382,7 @@ public abstract class Provider extends Properties {
         }
         if (!RestrictedSecurity.isServiceAllowed(s)) {
             // We're in restricted security mode which does not allow this service,
-            // then return without registering.
+            // return without registering.
             return;
         }
         String type = s.getType();

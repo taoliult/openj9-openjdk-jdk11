@@ -106,6 +106,10 @@ public final class RestrictedSecurity {
      * @return the secure random provider
      */
     public static String getRandomProvider() {
+        if (!securityEnabled) {
+            printStackTraceAndExit(
+                    "Restricted security mode secure random provider can only be used when restricted security mode is enabled.");
+        }
         return restricts.jdkSecureRandomProvider;
     }
 
@@ -115,8 +119,11 @@ public final class RestrictedSecurity {
      * @return the secure random algorithm
      */
     public static String getRandomAlgorithm() {
+        if (!securityEnabled) {
+            printStackTraceAndExit(
+                    "Restricted security mode secure random algorithm can only be used when restricted security mode is enabled.");
+        }
         return restricts.jdkSecureRandomAlgorithm;
-
     }
 
     /**
@@ -194,22 +201,14 @@ public final class RestrictedSecurity {
                 restricts = new RestrictedSecurityProperties(userSecurityNum,
                         props, userSecurityTrace, userSecurityAudit, userSecurityHelp);
 
-                // Check if the SunsetDate expired.
-                if (isPolicySunset(restricts.descSunsetDate)) {
-                    printStackTraceAndExit("Restricted security policy expired.");
-                }
-
-                // Check secure random settings.
-                if (isNullOrBlank(restricts.jdkSecureRandomProvider)
-                        || isNullOrBlank(restricts.jdkSecureRandomAlgorithm)) {
-                    printStackTraceAndExit("Restricted security mode secure random is null.");
-                }
+                // Restricted security properties checks
+                restrictsCheck();
 
                 // Remove all security providers.
-                Iterator<Map.Entry<Object, Object>> i = props.entrySet().iterator();
-                while (i.hasNext()) {
+                for (Iterator<Map.Entry<Object, Object>> i = props.entrySet().iterator(); i.hasNext();) {
                     Map.Entry<Object, Object> e = i.next();
-                    if (((String) e.getKey()).startsWith("security.provider")) {
+                    String key = (String) e.getKey();
+                    if (key.startsWith("security.provider")) {
                         if (debug != null) {
                             debug.println("Removing provider: " + e);
                         }
@@ -240,8 +239,7 @@ public final class RestrictedSecurity {
             if (debug != null) {
                 debug.println("Unable to load restricted security mode configurations.");
             }
-            e.printStackTrace();
-            System.exit(1);
+            printStackTraceAndExit(e);
         }
         return securityEnabled;
     }
@@ -357,6 +355,27 @@ public final class RestrictedSecurity {
         if (!isNullOrBlank(keyStore)) {
             // SSL property "javax.net.ssl.keyStore" set at the JVM level via system properties.
             System.setProperty("javax.net.ssl.keyStore", keyStore);
+        }
+    }
+
+    /**
+     * Check the restricted security properties
+     */
+    private static void restrictsCheck() {
+        // Check restricts object
+        if (restricts == null) {
+            printStackTraceAndExit("Restricted security property is null.");
+        }
+
+        // Check if the SunsetDate expired.
+        if (isPolicySunset(restricts.descSunsetDate)) {
+            printStackTraceAndExit("Restricted security policy expired.");
+        }
+
+        // Check secure random settings.
+        if (isNullOrBlank(restricts.jdkSecureRandomProvider)
+                || isNullOrBlank(restricts.jdkSecureRandomAlgorithm)) {
+            printStackTraceAndExit("Restricted security mode secure random is null.");
         }
     }
 
@@ -488,9 +507,9 @@ public final class RestrictedSecurity {
                     if (userSecurityAudit) {
                         listAudit();
                     }
-                    if ((userSecurityNum == 0)) {
+                    if (userSecurityNum == 0) {
                         if (userSecurityTrace) {
-                            RestrictedSecurity.printStackTraceAndExit(
+                            printStackTraceAndExit(
                                     "Unable to list the trace info without specify the security policy number.");
                         } else {
                             if (debug != null) {
@@ -505,8 +524,7 @@ public final class RestrictedSecurity {
                 initProviders();
                 // Load the restricted security properties from java.security properties.
                 initProperties();
-                // Load the restricted security provider constraints from java.security
-                // properties.
+                // Load the restricted security provider constraints from java.security properties.
                 initConstraints();
 
                 if (debug != null) {
@@ -516,8 +534,7 @@ public final class RestrictedSecurity {
                 if (debug != null) {
                     debug.println("Unable to initialize restricted security mode.");
                 }
-                e.printStackTrace();
-                System.exit(1);
+                printStackTraceAndExit(e);
             }
         }
 
@@ -539,7 +556,7 @@ public final class RestrictedSecurity {
                 }
 
                 if (!areBracketsBalanced(providerInfo)) {
-                    RestrictedSecurity.printStackTraceAndExit("Provider format is incorrect: " + providerInfo);
+                    printStackTraceAndExit("Provider format is incorrect: " + providerInfo);
                 }
 
                 int pos = providerInfo.indexOf('[');
@@ -564,7 +581,7 @@ public final class RestrictedSecurity {
             }
 
             if (providers.isEmpty()) {
-                RestrictedSecurity.printStackTraceAndExit(
+                printStackTraceAndExit(
                         "Restricted security mode provider list empty, or no such restricted security policy in java.security file.");
             }
         }
@@ -642,7 +659,7 @@ public final class RestrictedSecurity {
                 providerInfo = providerInfo.trim()
                         .replaceAll("\\[\\s*\\{", "[{")
                         .replaceAll("\\}\\s*\\]", "}]")
-                        .replaceAll("\\}\\s*\\,\\s*\\{", "},{");
+                        .replaceAll("\\}\\s*,\\s*\\{", "},{");
 
                 int startIndex = providerInfo.indexOf("[{");
                 int endIndex = providerInfo.indexOf("}]");
@@ -653,7 +670,7 @@ public final class RestrictedSecurity {
                             .substring(startIndex + 2, endIndex).split("\\},\\{");
 
                     if (constrArray.length <= 0) {
-                        RestrictedSecurity.printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
+                        printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
                     }
 
                     // Constraint object array.
@@ -666,7 +683,7 @@ public final class RestrictedSecurity {
 
                         // Each constraint must includes 3 fields(type, algorithm, attributes).
                         if (input.length != 3) {
-                            RestrictedSecurity.printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
+                            printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
                         }
 
                         String inType = input[0].trim();
@@ -679,7 +696,7 @@ public final class RestrictedSecurity {
                             for (String attribute : attributeArray) {
                                 String[] in = attribute.split("=");
                                 if (in.length != 2) {
-                                    RestrictedSecurity.printStackTraceAndExit(
+                                    printStackTraceAndExit(
                                             "Constraint attributes format is incorrect: " + providerInfo);
                                 }
                             }
@@ -701,7 +718,7 @@ public final class RestrictedSecurity {
                         debug.println("Loaded constraints for security provider: " + providerName);
                     }
                 } else {
-                    RestrictedSecurity.printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
+                    printStackTraceAndExit("Constraint format is incorrect: " + providerInfo);
                 }
             }
         }
@@ -967,7 +984,7 @@ public final class RestrictedSecurity {
          * @param string the input string
          * @return "" if the string is null
          */
-        private String parseProperty(String string) {
+        private static String parseProperty(String string) {
             return (string != null) ? string.trim() : "";
         }
 
@@ -977,7 +994,7 @@ public final class RestrictedSecurity {
          * @param string input string for checking
          * @return true if the brackets are balanced
          */
-        private boolean areBracketsBalanced(String string) {
+        private static boolean areBracketsBalanced(String string) {
 
             Deque<Character> deque = new LinkedList<>();
 
@@ -1004,14 +1021,14 @@ public final class RestrictedSecurity {
          * @param string input string for checking
          * @return true if the input string is asterisk
          */
-        private boolean isAsterisk(String string) {
+        private static boolean isAsterisk(String string) {
             return "*".equals(string);
         }
 
         /**
          * Nested class for provider's constraints
          */
-        private final class Constraint {
+        private static final class Constraint {
             final String type;
             final String algorithm;
             final String attributes;
