@@ -260,15 +260,11 @@ com/sun/crypto/provider/Cipher/Blowfish/BlowfishTestVector.java	https://github.c
 com/sun/crypto/provider/Cipher/AES/TestShortBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestSameBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestNonexpanding.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestKATForGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_VT.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_VK.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_IV.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestISO10126Padding.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestGCMKeyAndIvCheck.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestCopySafe.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestCICOWithGCMAndAAD.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestCICOWithGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithRemoveAddProvider.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithProviderChange.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithDefaultProvider.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
@@ -287,8 +283,6 @@ com/sun/crypto/provider/Cipher/AEAD/SealedObjectTest.java	https://github.com/ibm
 com/sun/crypto/provider/Cipher/AEAD/SameBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/ReadWriteSkip.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/KeyWrapper.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AEAD/GCMParameterSpecTest.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AEAD/GCMLargeDataKAT.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/Encrypt.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/CICO/PBEFunc/CICOPBEFuncTest.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/CICO/CICODESFuncTest.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
@@ -434,8 +428,6 @@ java/security/Provider/SecurityProviderModularTest.java	https://github.com/ibmru
 # SunJCE and SunRsaSign related
 
 com/sun/crypto/provider/Cipher/AEAD/Encrypt.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AEAD/GCMLargeDataKAT.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AEAD/GCMParameterSpecTest.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/KeyWrapper.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/ReadWriteSkip.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AEAD/SameBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
@@ -454,15 +446,11 @@ com/sun/crypto/provider/Cipher/AES/TestAESCipher.java	https://github.com/ibmrunt
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithDefaultProvider.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithProviderChange.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithRemoveAddProvider.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestCICOWithGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestCICOWithGCMAndAAD.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestCopySafe.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestGCMKeyAndIvCheck.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestISO10126Padding.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_IV.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_VK.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestKATForECB_VT.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
-com/sun/crypto/provider/Cipher/AES/TestKATForGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestNonexpanding.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestSameBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
 com/sun/crypto/provider/Cipher/AES/TestShortBuffer.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/525	linux-x64
@@ -684,7 +672,6 @@ javax/net/ssl/ciphersuites/ECCurvesconstraints.java	https://github.com/ibmruntim
 javax/net/ssl/ciphersuites/DisabledAlgorithms.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 javax/net/ssl/TLSv12/TLSEnginesClosureTest.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 javax/net/ssl/TLSv12/SignatureAlgorithms.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
-javax/net/ssl/TLSv12/ShortRSAKeyGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 javax/net/ssl/TLSv12/ShortRSAKey512.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 javax/net/ssl/TLSv12/ProtocolFilter.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 javax/net/ssl/TLSv12/DisabledShortRSAKeys.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
@@ -1003,10 +990,6 @@ sun/security/pkcs11/KeyGenerator/TestKeyGenerator.java	https://github.com/ibmrun
 sun/security/pkcs11/KeyAgreement/UnsupportedDHKeys.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 sun/security/pkcs11/ec/TestECGenSpec.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 sun/security/pkcs11/ec/ReadCertificates.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
-sun/security/pkcs11/Cipher/TestKATForGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
-sun/security/pkcs11/Cipher/TestGCMKeyAndIvCheck.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
-sun/security/pkcs11/Cipher/TestCICOWithGCMAndAAD.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
-sun/security/pkcs11/Cipher/TestCICOWithGCM.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 sun/security/pkcs11/Cipher/ReinitCipher.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 sun/security/pkcs11/Cipher/Test4512704.java	https://github.com/ibmruntimes/openj9-openjdk-jdk11/issues/547	linux-x64
 
