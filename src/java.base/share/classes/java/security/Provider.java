@@ -1159,7 +1159,7 @@ public abstract class Provider extends Properties {
         for (Iterator<Map.Entry<ServiceKey, Service>> t =
                 map.entrySet().iterator(); t.hasNext(); ) {
             Service s = t.next().getValue();
-            if (s.isValid() == false) {
+            if ((s.isValid() == false) || !RestrictedSecurity.isServiceAllowed(s)) {
                 t.remove();
             }
         }
