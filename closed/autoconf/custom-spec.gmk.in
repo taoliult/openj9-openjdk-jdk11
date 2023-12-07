@@ -179,3 +179,7 @@ ifeq (riscv64,$(OPENJDK_TARGET_CPU))
     JAVA_FLAGS += -DserverStartupTimeout=36000
   endif
 endif
+
+# Required by OpenJCEPlus.
+BUILD_OPENJCEPLUS  := @BUILD_OPENJCEPLUS@
+OPENJCEPLUS_TOPDIR := $(TOPDIR)/OpenJCEPlus
