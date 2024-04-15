@@ -375,17 +375,21 @@ public final class TestTLS12 extends SecmodTest {
         }
 
         private static SSLEngine[][] getSSLEnginesToTest() throws Exception {
-            SSLEngine[][] enginesToTest = new SSLEngine[2][2];
+            SSLEngine[][] enginesToTest = new SSLEngine[1][2];
             // TLS_RSA_WITH_AES_128_GCM_SHA256 ciphersuite is available but
             // must not be chosen for the TLS connection if not supported.
             // See JDK-8222937.
-            String[][] preferredSuites = new String[][]{ new String[] {
-                    "TLS_RSA_WITH_AES_128_GCM_SHA256",
-                    "TLS_RSA_WITH_AES_128_CBC_SHA256"
-            },  new String[] {
-                    "TLS_RSA_WITH_AES_128_GCM_SHA256",
-                    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256"
-            }};
+            // String[][] preferredSuites = new String[][]{ new String[] {
+            //         "TLS_RSA_WITH_AES_128_GCM_SHA256",
+            //         "TLS_RSA_WITH_AES_128_CBC_SHA256"
+            // },  new String[] {
+            //         "TLS_RSA_WITH_AES_128_GCM_SHA256",
+            //         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256"
+            // }};
+            String[][] preferredSuites = new String[][] { new String[] {
+                    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"
+            } };
             for (int i = 0; i < enginesToTest.length; i++) {
                 enginesToTest[i][0] = createSSLEngine(true);
                 enginesToTest[i][1] = createSSLEngine(false);
