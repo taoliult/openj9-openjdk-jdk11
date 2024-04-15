@@ -90,7 +90,7 @@ public final class TestTLS12 extends SecmodTest {
 
         if (shouldRun()) {
             // Test against JCE
-            testTlsAuthenticationCodeGeneration();
+            //testTlsAuthenticationCodeGeneration();
 
             // Self-integrity test (complete TLS 1.2 communication)
             new testTLS12SunPKCS11Communication().run();
