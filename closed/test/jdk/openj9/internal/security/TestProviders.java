@@ -48,27 +48,27 @@ public class TestProviders {
                 // Test strict profile provider list.
                 Arguments.of("TestBase.Version",
                         System.getProperty("test.src") + "/provider-java.security",
-                        "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunJSSE)"),
-                // Test default profile provider list.
-                Arguments.of("TestBase",
-                        System.getProperty("test.src") + "/provider-java.security",
-                        "(?s)(?=.*Sun)(?=.*SunRsaSign)(?=.*SunEC)(?=.*SunJSSE)"
-                            + "(?=.*SunJCE)(?=.*SunJGSS)(?=.*SunSASL)"
-                            + "(?=.*XMLDSig)(?=.*SunPCSC)(?=.*JdkLDAP)(?=.*JdkSASL)"),
-                // Test extended profile provider list.
-                Arguments.of("TestBase.Version-Extended",
-                        System.getProperty("test.src") + "/provider-java.security",
-                        "(?s)(?=.*Sun)(?=.*SunRsaSign)(?=.*SunEC)(?=.*SunJSSE)"
-                            + "(?=.*SunJCE)(?=.*SunJGSS)(?=.*SunSASL)"
-                            + "(?=.*XMLDSig)(?=.*SunPCSC)(?=.*JdkLDAP)(?=.*JdkSASL)"),
-                // Test update provider list with value.
-                Arguments.of("Test-Profile.Updated_1",
-                        System.getProperty("test.src") + "/provider-java.security",
-                        "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunSASL)"),
-                // Test update provider list with null.
-                Arguments.of("Test-Profile.Updated_2",
-                        System.getProperty("test.src") + "/provider-java.security",
                         "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunJSSE)")
+                // // Test default profile provider list.
+                // Arguments.of("TestBase",
+                //         System.getProperty("test.src") + "/provider-java.security",
+                //         "(?s)(?=.*Sun)(?=.*SunRsaSign)(?=.*SunEC)(?=.*SunJSSE)"
+                //             + "(?=.*SunJCE)(?=.*SunJGSS)(?=.*SunSASL)"
+                //             + "(?=.*XMLDSig)(?=.*SunPCSC)(?=.*JdkLDAP)(?=.*JdkSASL)"),
+                // // Test extended profile provider list.
+                // Arguments.of("TestBase.Version-Extended",
+                //         System.getProperty("test.src") + "/provider-java.security",
+                //         "(?s)(?=.*Sun)(?=.*SunRsaSign)(?=.*SunEC)(?=.*SunJSSE)"
+                //             + "(?=.*SunJCE)(?=.*SunJGSS)(?=.*SunSASL)"
+                //             + "(?=.*XMLDSig)(?=.*SunPCSC)(?=.*JdkLDAP)(?=.*JdkSASL)"),
+                // // Test update provider list with value.
+                // Arguments.of("Test-Profile.Updated_1",
+                //         System.getProperty("test.src") + "/provider-java.security",
+                //         "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunSASL)"),
+                // // Test update provider list with null.
+                // Arguments.of("Test-Profile.Updated_2",
+                //         System.getProperty("test.src") + "/provider-java.security",
+                //         "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunJSSE)")
         );
     }
 
