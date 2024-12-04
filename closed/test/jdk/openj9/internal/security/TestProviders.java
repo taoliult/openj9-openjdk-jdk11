@@ -127,7 +127,6 @@ public class TestProviders {
                 "-Dsemeru.fips=true",
                 "-Dsemeru.customprofile=" + customprofile,
                 "-Djava.security.properties=" + securityPropertyFile,
-                "-Djava.security.debug=semerufips",
                 "TestProviders"
         );
         outputAnalyzer.reportDiagnosticSummary();
